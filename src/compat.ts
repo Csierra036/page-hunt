@@ -44,7 +44,7 @@ async function api<T>(path: string, signal?: AbortSignal): Promise<T> {
     throw new CompatError('No hay conexión con el servidor local del juego (¿está corriendo `npm run dev`?).');
   }
   const data = await res.json().catch(() => null);
-  if (!data) throw new CompatError('El servidor local del juego no respondió (usa `npm run dev` o `npm run preview`).');
+  if (!data) throw new CompatError(`El servidor del juego no respondió bien (código ${res.status}); puede haberse reiniciado por falta de memoria. Revisa sus logs.`);
   if (!res.ok || data.error) throw new CompatError(data.error ?? `Error ${res.status}`);
   return data as T;
 }

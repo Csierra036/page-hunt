@@ -48,7 +48,15 @@ function getBrowser() {
   if (!browser) {
     const executablePath = chromiumPath();
     if (!executablePath) throw new UserError('no-chromium', 'No hay Chromium instalado en el servidor: la simulación visual no está disponible (define CHROMIUM_PATH).');
-    browser = chromium.launch({ executablePath }).catch((e) => {
+    browser = chromium.launch({
+      executablePath,
+      // Small containers (Render, Docker): tiny /dev/shm and little RAM.
+      args: ['--disable-dev-shm-usage', '--disable-gpu', '--no-zygote', '--renderer-process-limit=1', '--js-flags=--max-old-space-size=256'],
+    }).then((b) => {
+      // If Chromium crashes (e.g. out of memory), launch a fresh one on the next capture.
+      b.on('disconnected', () => (browser = null));
+      return b;
+    }).catch((e) => {
       browser = null;
       throw new UserError('no-chromium', `No se pudo iniciar Chromium: ${e.message}`);
     });
