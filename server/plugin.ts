@@ -27,7 +27,8 @@ function params(req: IncomingMessage) {
 }
 
 function embedderOrigin(req: IncomingMessage) {
-  return `http://${req.headers.host ?? 'localhost'}`;
+  const proto = String(req.headers['x-forwarded-proto'] ?? 'http').split(',')[0].trim();
+  return `${proto}://${req.headers.host ?? 'localhost'}`;
 }
 
 export function pageHuntApi(): Plugin {

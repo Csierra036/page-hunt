@@ -4,6 +4,8 @@ import { pageHuntApi } from './server/plugin';
 
 export default defineConfig({
   plugins: [pageHuntApi()],
+  // Render (and similar hosts) proxy requests with their own hostname.
+  preview: { allowedHosts: ['.onrender.com'] },
   build: {
     rollupOptions: {
       // The game and the developer-owned test page used by the "DOM real" mode.
