@@ -16,6 +16,8 @@ const settings = loadSettings();
 audio.setMuted(settings.muted);
 audio.setVolume(settings.volume);
 
+audio.music('menu'); // Starts on the first click or key press if the browser blocks autoplay.
+
 const hud = new Hud();
 const game = new Game($<HTMLCanvasElement>('fx'), $('stage'), $('page-layer'), settings, {
   pause: () => show('pause'),
@@ -155,6 +157,7 @@ async function play(c: Compat, mode: StageMode) {
       return;
     }
     game.begin(stage);
+    audio.music('game');
     current = { compat: c, mode };
     hud.reset();
     const badge = $('mode-badge');
@@ -170,6 +173,7 @@ async function play(c: Compat, mode: StageMode) {
     if ((e as Error).name === 'AbortError') return;
     game.end();
     hide('hud', 'hud-bottom');
+    audio.music('menu');
     setStatus(`No se pudo cargar el escenario: ${(e as Error).message}`, 'error');
     renderUnsupported((e as Error).message);
   } finally {
@@ -187,6 +191,7 @@ function changeUrl() {
   current = null;
   hide('hud', 'hud-bottom', 'pause', 'end', 'settings');
   show('start');
+  audio.music('menu');
   setStatus('');
   input.focus();
   input.select();
@@ -311,6 +316,7 @@ const ENDINGS: Record<Ending, string> = {
 };
 
 function showEnd(ending: Ending) {
+  audio.music('menu');
   const s = game.score;
   const stage = game.stage!;
   const t = Math.round(game.time);
