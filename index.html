@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <link rel="icon" href="data:," />
+    <title>Page Hunt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="app">
+      <header id="hud" class="hidden" aria-label="Estado de la partida">
+        <div class="hud-left">
+          <span id="mode-badge" class="badge" tabindex="0"></span>
+          <span id="site" class="site"></span>
+        </div>
+        <div class="hud-meter" aria-label="Avance hacia la ronda 20">
+          <div class="meter-label">AVANCE <span id="progress-pct">0%</span></div>
+          <div class="meter"><div id="progress-bar"></div><div id="boss-ticks"></div></div>
+        </div>
+        <div class="hud-stats">
+          <div><small>VIDAS</small><b id="hearts" class="hearts" aria-label="Vidas"></b></div>
+          <div><small>PUNTOS</small><b id="score">0</b></div>
+          <div><small>COMBO</small><b id="combo">x1</b></div>
+          <div><small>RONDA</small><b id="round">1</b></div>
+        </div>
+        <nav class="hud-buttons">
+          <button id="b-sound" class="icon" title="Sonido (M)" aria-label="Sonido"></button>
+          <button id="b-pause" class="icon" title="Pausa (P)" aria-label="Pausa">
+            <svg viewBox="0 0 16 16"><rect x="3" y="2" width="4" height="12" /><rect x="9" y="2" width="4" height="12" /></svg>
+          </button>
+          <button id="b-restart" class="icon" title="Reiniciar escenario" aria-label="Reiniciar">
+            <svg viewBox="0 0 16 16"><path d="M8 2a6 6 0 1 0 6 6h-2a4 4 0 1 1-4-4v3l4-4-4-4z" /></svg>
+          </button>
+          <button id="b-url" class="text" title="Cambiar de URL">URL</button>
+          <button id="b-settings" class="icon" title="Ajustes" aria-label="Ajustes">
+            <svg viewBox="0 0 16 16"><path d="M7 1h2l.4 2 1.6.7 1.7-1.2 1.4 1.4-1.2 1.7.7 1.6 2 .4v2l-2 .4-.7 1.6 1.2 1.7-1.4 1.4-1.7-1.2-1.6.7L9 15H7l-.4-2-1.6-.7-1.7 1.2-1.4-1.4 1.2-1.7L2.4 9 .4 8.6v-2l2-.4.7-1.6-1.2-1.7 1.4-1.4 1.7 1.2L6.6 3zM8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" /></svg>
+          </button>
+        </nav>
+      </header>
+
+      <main id="stage">
+        <div id="page-layer"></div>
+        <canvas id="fx"></canvas>
+        <div id="hud-bottom" class="hidden">
+          <div class="ammo-box">
+            <div class="weapon-row"><span id="weapon-name"></span><span id="ammo-count"></span></div>
+            <div id="shells" aria-hidden="true"></div>
+            <div id="reload" class="reload" aria-label="Recarga"><div id="reload-sweet"></div><div id="reload-fill"></div></div>
+            <div id="reload-hint" class="hint"></div>
+          </div>
+          <div class="ducks-box"><small>PATOS</small><div id="tally"></div></div>
+          <div class="touch-buttons">
+            <button id="b-reload" class="btn small">RECARGAR</button>
+          </div>
+        </div>
+        <div id="toast" role="status" aria-live="polite"></div>
+      </main>
+
+      <section id="start" class="overlay">
+        <div class="panel start">
+          <h1 class="logo">PAGE<span>HUNT</span></h1>
+          <p class="tagline">Escribe la URL de una página y conviértela en tu campo de tiro. Dispara, recarga y caza patos mientras la destruyes.</p>
+          <form id="url-form" class="url-row" novalidate>
+            <label class="sr-only" for="url">URL de la página</label>
+            <input id="url" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://example.com" />
+            <button class="btn primary" type="submit">CARGAR</button>
+          </form>
+          <p id="url-status" class="status" role="status" aria-live="polite"></p>
+          <div id="compat" class="compat hidden"></div>
+          <div class="picks">
+            <span>Probar:</span>
+            <button class="chip" type="button" data-url="/demo/">Página de prueba (DOM real)</button>
+            <button class="chip" type="button" data-url="https://example.com">example.com</button>
+            <button class="chip" type="button" data-url="https://en.wikipedia.org/wiki/Duck_Hunt">Wikipedia</button>
+            <button class="chip" type="button" data-url="https://github.com">GitHub</button>
+          </div>
+          <details class="help">
+            <summary>Cómo se juega y qué modos existen</summary>
+            <ul>
+              <li><b>Jefes</b>: cada 5 rondas (hasta la 20) aparece un jefe. Derriba sus ataques a tiros: si te alcanzan pierdes uno de tus 3 corazones. Los patos siguen saliendo y sueltan cajas de armas: dispara al paracaídas para que caiga y recógela al tocar el suelo.</li>
+          <li><b>Ratón</b>: apuntar · <b>clic izquierdo</b>: disparar · <b id="help-reload">R</b>: recargar (púlsala otra vez en la zona verde para una recarga perfecta) · <b>rueda / flechas</b>: desplazar · <b>P</b>: pausa · <b>M</b>: sonido.</li>
+              <li><b>DOM real</b>: solo páginas de este mismo servidor (como la página de prueba). Se modifican sus elementos reales.</li>
+              <li><b>Iframe en vivo</b>: páginas externas que permiten mostrarse en un iframe. Su DOM no es accesible: el daño es una capa superpuesta.</li>
+              <li><b>Simulación visual</b>: se destruye una captura de la página. La página real nunca se modifica.</li>
+            </ul>
+          </details>
+          <p class="privacy">Privacidad: para comprobar la compatibilidad y capturar páginas externas, el servidor local del juego (en tu equipo) visita la URL sin cookies ni sesiones. La URL no se envía a servicios de terceros. Al pulsar CARGAR aceptas esa visita.</p>
+        </div>
+      </section>
+
+      <section id="pause" class="overlay hidden">
+        <div class="panel narrow">
+          <h2>PAUSA</h2>
+          <div class="col">
+            <button id="p-resume" class="btn primary">Continuar</button>
+            <button id="p-restart" class="btn">Reiniciar escenario</button>
+            <button id="p-url" class="btn">Cambiar de URL</button>
+            <button id="p-settings" class="btn">Ajustes</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="settings" class="overlay hidden">
+        <div class="panel narrow">
+          <h2>AJUSTES</h2>
+          <div class="settings">
+            <label>Tecla de recarga <button id="s-key" class="btn small key"></button></label>
+            <label>Volumen <input id="s-volume" type="range" min="0" max="1" step="0.05" /></label>
+            <label>Sonido activado <input id="s-sound" type="checkbox" /></label>
+            <label>Vibración de pantalla <input id="s-shake" type="checkbox" /></label>
+          </div>
+          <p id="s-msg" class="status"></p>
+          <button id="s-close" class="btn primary">Listo</button>
+        </div>
+      </section>
+
+      <section id="end" class="overlay hidden">
+        <div class="panel narrow">
+          <h2 id="end-title">¡PÁGINA DESTRUIDA!</h2>
+          <p id="end-mode" class="muted"></p>
+          <div id="end-stats" class="stats"></div>
+          <div class="col">
+            <button id="e-restart" class="btn primary">Jugar otra vez</button>
+            <button id="e-url" class="btn">Otra URL</button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cafetería Patito — página de prueba</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #1d2433; background: #f6f3ee; }
+      header { background: #1d2433; color: #fff; display: flex; align-items: center; gap: 24px; padding: 14px 32px; flex-wrap: wrap; }
+      .brand { font-weight: 800; font-size: 22px; display: flex; align-items: center; gap: 10px; }
+      .brand .logo { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffd84d, #e09b13); }
+      nav { display: flex; gap: 18px; }
+      nav a { color: #cfd6e6; text-decoration: none; }
+      .cta { margin-left: auto; background: #ff5a3c; color: #fff; border: 0; padding: 10px 18px; border-radius: 8px; font-weight: 700; }
+      .hero { display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; padding: 48px 32px; align-items: center; }
+      .hero h1 { font-size: clamp(30px, 5vw, 54px); margin: 0 0 12px; line-height: 1.05; }
+      .hero p { font-size: 18px; color: #4b5568; max-width: 520px; }
+      .hero .art { height: 280px; border-radius: 18px; background: linear-gradient(160deg, #63adf2, #2a6fd1); position: relative; overflow: hidden; }
+      .hero .art::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 80px; background: #3c9a3f; }
+      .duck { position: absolute; width: 90px; height: 60px; border-radius: 50% 50% 45% 45%; background: #7a4a24; left: 40%; top: 35%; }
+      .duck::before { content: ""; position: absolute; width: 40px; height: 40px; border-radius: 50%; background: #1f7a3a; right: -18px; top: -20px; }
+      .buttons { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+      .btn { padding: 12px 20px; border-radius: 10px; border: 2px solid #1d2433; background: #fff; font-weight: 700; font-size: 16px; }
+      .btn.dark { background: #1d2433; color: #fff; }
+      .ticker { background: #ffd84d; padding: 10px 32px; font-weight: 700; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+      .ticker span.item { background: #fff; padding: 4px 10px; border-radius: 6px; }
+      section.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 22px; padding: 32px; }
+      .card { background: #fff; border-radius: 14px; padding: 18px; box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+      .card .thumb { height: 120px; border-radius: 10px; margin-bottom: 12px; }
+      .card h3 { margin: 0 0 6px; }
+      .card p { margin: 0 0 12px; color: #4b5568; }
+      .price { font-weight: 800; font-size: 20px; color: #ff5a3c; }
+      .t1 { background: linear-gradient(135deg, #7a4a24, #c98a4a); }
+      .t2 { background: linear-gradient(135deg, #f2c14e, #f78154); }
+      .t3 { background: linear-gradient(135deg, #4d9de0, #3bb273); }
+      .t4 { background: linear-gradient(135deg, #e15554, #7768ae); }
+      .split { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 32px; }
+      form { background: #fff; padding: 22px; border-radius: 14px; display: grid; gap: 12px; }
+      input, textarea { font: inherit; padding: 10px; border: 1px solid #c6ccd8; border-radius: 8px; }
+      table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 14px; overflow: hidden; }
+      td, th { padding: 10px 14px; border-bottom: 1px solid #e6e2da; text-align: left; }
+      footer { background: #1d2433; color: #cfd6e6; padding: 32px; display: flex; gap: 32px; flex-wrap: wrap; }
+      @media (max-width: 700px) { .hero, .split { grid-template-columns: 1fr; } nav { display: none; } }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand"><span class="logo"></span> Cafetería Patito</div>
+      <nav><a href="#menu">Menú</a><a href="#reservas">Reservas</a><a href="#horario">Horario</a><a href="#contacto">Contacto</a></nav>
+      <button class="cta">Pedir ahora</button>
+    </header>
+
+    <div class="ticker" id="ticker"><strong>EN DIRECTO:</strong> <span class="item">Hora: <b id="clock">--:--:--</b></span></div>
+
+    <section class="hero">
+      <div>
+        <h1>El mejor café del estanque</h1>
+        <p>Página de prueba de Page Hunt. Es del mismo origen que el juego, así que sus elementos DOM reales se pueden dañar, deformar y derribar.</p>
+        <div class="buttons"><button class="btn dark">Ver el menú</button><button class="btn">Reservar mesa</button></div>
+      </div>
+      <div class="art" role="img" aria-label="Ilustración de un pato"><div class="duck"></div></div>
+    </section>
+
+    <section class="grid" id="menu">
+      <article class="card"><div class="thumb t1"></div><h3>Café de la casa</h3><p>Tueste medio, notas de chocolate y avellana.</p><div class="price">2,50 €</div></article>
+      <article class="card"><div class="thumb t2"></div><h3>Croissant dorado</h3><p>Mantequilla francesa, horneado cada mañana.</p><div class="price">1,80 €</div></article>
+      <article class="card"><div class="thumb t3"></div><h3>Té del estanque</h3><p>Verde con menta fresca y un toque de limón.</p><div class="price">2,20 €</div></article>
+      <article class="card"><div class="thumb t4"></div><h3>Tarta de frutos rojos</h3><p>Base crujiente y crema suave.</p><div class="price">3,90 €</div></article>
+    </section>
+
+    <section class="split" id="reservas">
+      <form onsubmit="return false">
+        <h2>Reserva tu mesa</h2>
+        <input placeholder="Nombre" />
+        <input placeholder="Fecha" />
+        <textarea rows="3" placeholder="Comentarios"></textarea>
+        <button class="btn dark">Enviar reserva</button>
+      </form>
+      <div id="horario">
+        <h2>Horario</h2>
+        <table>
+          <tr><th>Día</th><th>Apertura</th><th>Cierre</th></tr>
+          <tr><td>Lunes a viernes</td><td>07:30</td><td>20:00</td></tr>
+          <tr><td>Sábado</td><td>09:00</td><td>21:00</td></tr>
+          <tr><td>Domingo</td><td>09:00</td><td>14:00</td></tr>
+        </table>
+        <p>Los patos entran gratis. Los cazadores, no.</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card"><h3>Opiniones</h3><p>“El mejor flat white de la ciudad.” — Ana</p><p>“Volveré solo por los croissants.” — Luis</p></article>
+      <article class="card"><h3>Eventos</h3><p>Viernes: noche de juegos retro.</p><p>Sábado: cata de cafés de origen.</p></article>
+      <article class="card"><h3>Newsletter</h3><p>Recibe nuestras ofertas cada semana.</p><button class="btn">Suscribirme</button></article>
+    </section>
+
+    <footer id="contacto">
+      <div><strong>Cafetería Patito</strong><br />Calle del Estanque 12</div>
+      <div>hola@cafeteria-patito.test<br />+34 600 000 000</div>
+      <div>© 2026 — Página ficticia para pruebas</div>
+    </footer>
+
+    <script>
+      // Dynamic content: a live clock and items appended to the ticker over time.
+      const clock = document.getElementById('clock');
+      setInterval(() => (clock.textContent = new Date().toLocaleTimeString('es')), 1000);
+      const offers = ['2x1 en cafés', 'Croissant gratis', 'Nueva tarta', 'Happy hour 17:00', 'Té helado'];
+      let i = 0;
+      setInterval(() => {
+        if (i >= offers.length) return;
+        const s = document.createElement('span');
+        s.className = 'item';
+        s.textContent = offers[i++];
+        document.getElementById('ticker').append(s);
+      }, 4000);
+    </script>
+  </body>
+</html>
