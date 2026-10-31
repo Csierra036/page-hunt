@@ -9,8 +9,8 @@ export const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.g
 const heart = (full: boolean) =>
   `<svg viewBox="0 0 7 6" class="heart${full ? '' : ' empty'}"><path d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/></svg>`;
 
-const SOUND_ON = '<svg viewBox="0 0 16 16"><path d="M2 6h3l4-3v10l-4-3H2zM11 5l1-1a6 6 0 0 1 0 8l-1-1a4.5 4.5 0 0 0 0-6z"/></svg>';
-const SOUND_OFF = '<svg viewBox="0 0 16 16"><path d="M2 6h3l4-3v10l-4-3H2zM11 6l1-1 1.5 1.5L15 5l1 1-1.5 1.5L16 9l-1 1-1.5-1.5L12 10l-1-1 1.5-1.5z"/></svg>';
+export const SOUND_ON = '<svg viewBox="0 0 16 16"><path d="M2 6h3l4-3v10l-4-3H2zM11 5l1-1a6 6 0 0 1 0 8l-1-1a4.5 4.5 0 0 0 0-6z"/></svg>';
+export const SOUND_OFF = '<svg viewBox="0 0 16 16"><path d="M2 6h3l4-3v10l-4-3H2zM11 6l1-1 1.5 1.5L15 5l1 1-1.5 1.5L16 9l-1 1-1.5-1.5L12 10l-1-1 1.5-1.5z"/></svg>';
 
 export class Hud {
   private last = new Map<string, string>();

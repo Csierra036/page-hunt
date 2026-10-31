@@ -32,6 +32,29 @@ export function saveSettings(s: Settings) {
   }
 }
 
+// Last pages played (per browser), shown as shortcuts on the start screen.
+const RECENT_KEY = 'page-hunt:recent';
+const MAX_RECENT = 4;
+
+export function loadRecent(): string[] {
+  try {
+    const list = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]');
+    return Array.isArray(list) ? list.filter((u) => typeof u === 'string').slice(0, MAX_RECENT) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function addRecent(url: string) {
+  const list = [url, ...loadRecent().filter((u) => u !== url)].slice(0, MAX_RECENT);
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+  } catch {
+    // Ignore: no shortcuts next time.
+  }
+  return list;
+}
+
 /** "KeyR" -> "R", "Space" -> "Espacio". */
 export function keyLabel(code: string) {
   if (code.startsWith('Key')) return code.slice(3);

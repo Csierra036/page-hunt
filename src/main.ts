@@ -5,12 +5,12 @@ import { checkCompat, fetchCapture, MODE_NAMES, type Compat } from './compat';
 import type { Capture } from '../server/capture';
 import { normalizeUrl } from './core/url';
 import { Game, type Ending } from './game';
-import { keyLabel, loadSettings, RESERVED_KEYS, saveSettings } from './settings';
+import { addRecent, keyLabel, loadRecent, loadSettings, RESERVED_KEYS, saveSettings } from './settings';
 import { CaptureStage, loadImage } from './stage/capture';
 import { DomStage } from './stage/dom';
 import { IframeStage } from './stage/iframe';
 import type { Stage, StageMode } from './stage/types';
-import { $, hide, Hud, show } from './ui';
+import { $, hide, Hud, show, SOUND_OFF, SOUND_ON } from './ui';
 
 const settings = loadSettings();
 audio.setMuted(settings.muted);
@@ -103,7 +103,8 @@ function renderCompat(c: Compat) {
   }
   if (c.problem) appendProblem(c.problem);
   compatBox.classList.remove('hidden');
-  compatBox.querySelector<HTMLButtonElement>('.btn.primary')?.focus();
+  compatBox.querySelector<HTMLButtonElement>('.btn.primary')?.focus({ preventScroll: true });
+  compatBox.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 }
 
 function appendProblem(text: string) {
@@ -145,7 +146,7 @@ async function play(c: Compat, mode: StageMode) {
   show('start');
   hide('pause', 'end', 'settings');
   $('start').classList.add('busy-form');
-  setStatus(mode === 'capture' ? 'Capturando la página en el servidor local (puede tardar unos segundos)…' : 'Cargando la página…', 'busy');
+  setStatus(mode === 'capture' ? 'Capturando la página en el servidor (puede tardar unos segundos)…' : 'Cargando la página…', 'busy');
   game.end();
   // The HUD must be in place before mounting so the stage has its final size.
   show('hud', 'hud-bottom');
@@ -159,6 +160,7 @@ async function play(c: Compat, mode: StageMode) {
     game.begin(stage);
     audio.music('game');
     current = { compat: c, mode };
+    if (new URL(c.url).origin !== location.origin) renderRecent(addRecent(c.url));
     hud.reset();
     const badge = $('mode-badge');
     badge.textContent = stage.label;
@@ -192,10 +194,63 @@ function changeUrl() {
   hide('hud', 'hud-bottom', 'pause', 'end', 'settings');
   show('start');
   audio.music('menu');
+  syncStartSound();
   setStatus('');
   input.focus();
   input.select();
 }
+
+/** One click to play: the bundled test page in its recommended mode. */
+async function quickPlay() {
+  audio.init();
+  pending?.abort();
+  const ctrl = new AbortController();
+  pending = ctrl;
+  compatBox.classList.add('hidden');
+  setStatus('Preparando la página de prueba…', 'busy');
+  try {
+    const compat = await checkCompat(new URL('/demo/', location.href).href, ctrl.signal);
+    if (ctrl.signal.aborted) return;
+    if (compat.recommended) play(compat, compat.recommended);
+    else {
+      setStatus('');
+      renderCompat(compat);
+    }
+  } catch (e) {
+    if ((e as Error).name === 'AbortError') return;
+    setStatus((e as Error).message, 'error');
+  }
+}
+$('quick-play').addEventListener('click', quickPlay);
+
+function renderRecent(list: string[]) {
+  const box = $('recent');
+  box.querySelectorAll('.chip').forEach((c) => c.remove());
+  for (const url of list) {
+    const b = el('button', 'chip', new URL(url).host.replace(/^www\./, ''));
+    b.type = 'button';
+    b.title = url;
+    b.addEventListener('click', () => {
+      input.value = url;
+      analyze(url);
+    });
+    box.append(b);
+  }
+  box.classList.toggle('hidden', list.length === 0);
+}
+renderRecent(loadRecent());
+
+const syncStartSound = () => {
+  const b = $('start-sound');
+  b.innerHTML = settings.muted ? SOUND_OFF : SOUND_ON;
+  b.title = settings.muted ? 'Activar sonido' : 'Silenciar';
+};
+$('start-sound').addEventListener('click', () => {
+  audio.init();
+  game.toggleMute();
+  syncStartSound();
+});
+$('start-settings').addEventListener('click', openSettings);
 
 $('url-form').addEventListener('submit', (e) => {
   e.preventDefault();
@@ -245,6 +300,7 @@ const syncSettings = () => {
   $<HTMLInputElement>('s-sound').checked = !settings.muted;
   $<HTMLInputElement>('s-shake').checked = settings.shake;
   $('help-reload').textContent = keyLabel(settings.reloadKey);
+  syncStartSound();
 };
 
 function openSettings() {
@@ -305,6 +361,7 @@ $('s-shake').addEventListener('change', (e) => {
 });
 $('s-close').addEventListener('click', () => {
   hide('settings');
+  syncStartSound();
   if (game.state === 'paused') show('pause');
 });
 
@@ -351,7 +408,8 @@ const tick = () => {
 };
 tick();
 syncSettings();
-input.focus();
+// On touch screens, don't pop up the keyboard before the player chooses how to play.
+if (matchMedia('(pointer: fine)').matches) input.focus();
 
 if (import.meta.env.DEV) {
   // Read-only access for the e2e tests in tests/e2e.

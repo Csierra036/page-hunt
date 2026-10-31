@@ -62,33 +62,71 @@
 
       <section id="start" class="overlay">
         <div class="panel start">
-          <h1 class="logo">PAGE<span>HUNT</span></h1>
-          <p class="tagline">Escribe la URL de una página y conviértela en tu campo de tiro. Dispara, recarga y caza patos mientras la destruyes.</p>
+          <header class="start-head">
+            <h1 class="logo">PAGE<span>HUNT</span></h1>
+            <p class="tagline">Convierte cualquier página web en tu campo de tiro.</p>
+          </header>
+
+          <button id="quick-play" class="btn primary big" type="button">
+            <svg viewBox="0 0 8 8" aria-hidden="true"><path d="M1 0h1v1h1v1h1v1h1v1H4v1H3v1H2v1H1z" /></svg>
+            JUGAR AHORA
+          </button>
+          <p class="quick-note">Empieza al instante con la página de prueba.</p>
+
+          <div class="divider"><span>o destruye la página que quieras</span></div>
+
           <form id="url-form" class="url-row" novalidate>
-            <label class="sr-only" for="url">URL de la página</label>
-            <input id="url" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://example.com" />
-            <button class="btn primary" type="submit">CARGAR</button>
+            <label class="sr-only" for="url">Dirección de la página</label>
+            <input id="url" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="wikipedia.org" enterkeyhint="go" />
+            <button class="btn" type="submit">CARGAR</button>
           </form>
+          <p class="field-hint">No hace falta escribir <code>https://</code>. Pulsa Intro para comprobarla.</p>
           <p id="url-status" class="status" role="status" aria-live="polite"></p>
           <div id="compat" class="compat hidden"></div>
+
           <div class="picks">
-            <span>Probar:</span>
-            <button class="chip" type="button" data-url="/demo/">Página de prueba (DOM real)</button>
-            <button class="chip" type="button" data-url="https://example.com">example.com</button>
+            <span class="picks-label">Ideas:</span>
             <button class="chip" type="button" data-url="https://en.wikipedia.org/wiki/Duck_Hunt">Wikipedia</button>
+            <button class="chip" type="button" data-url="https://example.com">example.com</button>
             <button class="chip" type="button" data-url="https://github.com">GitHub</button>
+            <button class="chip" type="button" data-url="/demo/">Página de prueba</button>
           </div>
+          <div id="recent" class="picks hidden">
+            <span class="picks-label">Recientes:</span>
+          </div>
+
+          <section class="controls touch" aria-label="Controles táctiles">
+            <div><kbd>TOCA</kbd><span>Disparar</span></div>
+            <div><kbd>RECARGAR</kbd><span>Recargar</span></div>
+            <div><kbd>II</kbd><span>Pausa</span></div>
+          </section>
+          <section class="controls keys" aria-label="Controles">
+            <div><kbd class="mouse" aria-hidden="true"><svg viewBox="0 0 10 14"><path d="M1 3a4 3 0 0 1 8 0v7a4 4 0 0 1-8 0z" fill="none" stroke="currentColor" stroke-width="1.4" /><path d="M5 1v4" stroke="currentColor" stroke-width="1.4" /></svg></kbd><span>Apuntar</span></div>
+            <div><kbd>CLIC</kbd><span>Disparar</span></div>
+            <div><kbd id="help-reload">R</kbd><span>Recargar</span></div>
+            <div><kbd>P</kbd><span>Pausa</span></div>
+            <div><kbd>M</kbd><span>Sonido</span></div>
+          </section>
+
           <details class="help">
             <summary>Cómo se juega y qué modos existen</summary>
             <ul>
-              <li><b>Jefes</b>: cada 5 rondas (hasta la 20) aparece un jefe. Derriba sus ataques a tiros: si te alcanzan pierdes uno de tus 3 corazones. Los patos siguen saliendo y sueltan cajas de armas: dispara al paracaídas para que caiga y recógela al tocar el suelo.</li>
-          <li><b>Ratón</b>: apuntar · <b>clic izquierdo</b>: disparar · <b id="help-reload">R</b>: recargar (púlsala otra vez en la zona verde para una recarga perfecta) · <b>rueda / flechas</b>: desplazar · <b>P</b>: pausa · <b>M</b>: sonido.</li>
-              <li><b>DOM real</b>: solo páginas de este mismo servidor (como la página de prueba). Se modifican sus elementos reales.</li>
-              <li><b>Iframe en vivo</b>: páginas externas que permiten mostrarse en un iframe. Su DOM no es accesible: el daño es una capa superpuesta.</li>
+              <li><b>Objetivo</b>: rompe la página a tiros y caza patos. Cada 5 rondas (hasta la 20) aparece un jefe: derriba sus ataques o perderás uno de tus 3 corazones.</li>
+              <li><b>Armas</b>: los patos sueltan cajas en paracaídas. Dispara al paracaídas y recoge la caja cuando toque el suelo.</li>
+              <li><b>Recarga perfecta</b>: pulsa la tecla de recarga otra vez cuando la barra esté en la zona verde. Con la rueda o las flechas desplazas la página.</li>
+              <li><b>DOM real</b>: páginas de este mismo servidor (como la página de prueba). Se rompen sus elementos de verdad.</li>
+              <li><b>Iframe en vivo</b>: páginas externas que se dejan mostrar dentro de otra web. El daño es una capa encima.</li>
               <li><b>Simulación visual</b>: se destruye una captura de la página. La página real nunca se modifica.</li>
             </ul>
           </details>
-          <p class="privacy">Privacidad: para comprobar la compatibilidad y capturar páginas externas, el servidor local del juego (en tu equipo) visita la URL sin cookies ni sesiones. La URL no se envía a servicios de terceros. Al pulsar CARGAR aceptas esa visita.</p>
+
+          <footer class="start-foot">
+            <button id="start-sound" class="icon-btn" type="button" aria-label="Sonido"></button>
+            <button id="start-settings" class="icon-btn" type="button" aria-label="Ajustes" title="Ajustes">
+              <svg viewBox="0 0 16 16"><path d="M7 1h2l.4 2 1.6.7 1.7-1.2 1.4 1.4-1.2 1.7.7 1.6 2 .4v2l-2 .4-.7 1.6 1.2 1.7-1.4 1.4-1.7-1.2-1.6.7L9 15H7l-.4-2-1.6-.7-1.7 1.2-1.4-1.4 1.2-1.7L2.4 9 .4 8.6v-2l2-.4.7-1.6-1.2-1.7 1.4-1.4 1.7 1.2L6.6 3zM8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z" /></svg>
+            </button>
+            <p class="privacy">Para comprobar una página, el servidor del juego la visita sin cookies ni sesiones. La dirección no se comparte con terceros.</p>
+          </footer>
         </div>
       </section>
 
