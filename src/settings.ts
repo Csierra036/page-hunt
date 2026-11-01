@@ -12,7 +12,7 @@ const KEY = 'page-hunt:settings';
 export const DEFAULTS: Settings = { reloadKey: 'KeyR', muted: false, volume: 0.6, shake: true };
 
 /** Keys the game already uses; the reload key cannot be bound to them. */
-export const RESERVED_KEYS = ['KeyP', 'Escape', 'KeyM', 'Tab'];
+export const RESERVED_KEYS = ['KeyP', 'Escape', 'KeyM', 'KeyQ', 'Tab'];
 
 export function loadSettings(): Settings {
   try {

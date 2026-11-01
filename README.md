@@ -43,7 +43,7 @@ El juego no finge que todas las webs funcionan igual: según lo que el navegador
 - **La escopeta** es el arma base: 6 cartuchos y recarga con **R**. Si vuelves a pulsar cuando la barra está en la zona verde, haces una **recarga perfecta**; si fallas, el arma se encasquilla.
 - **Los patos** sueltan cajas en paracaídas con armas tipo Metal Slug: **ametralladora**, **lanzacohetes** y **francotirador**. Dispara al paracaídas y recoge la caja cuando toque el suelo.
 - **Los combos** multiplican los puntos (hasta ×8) mientras no falles. Hay patos dorados que valen más y patos bonus que traen una bandada extra.
-- Con el daño que haces se carga un ataque especial, **Doom**, que arrasa toda la pantalla.
+- Con el daño que haces se carga un ataque especial, **Doom**: cuando el medidor está lleno, pulsa **Q** y arrasa toda la pantalla.
 
 ### Cuatro jefes
 
