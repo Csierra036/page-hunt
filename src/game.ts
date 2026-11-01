@@ -348,7 +348,7 @@ export class Game {
     this.score.registerShot(hit);
     this.award(total, this.aim.x, this.aim.y);
     if (wpn.spent) {
-      // Metal Slug style: an empty bonus weapon is thrown away.
+      // An empty bonus weapon is thrown away.
       this.bonus = null;
       audio.shell();
       this.ui.toast('ARMA AGOTADA · VUELVES A LA ESCOPETA', 1200);

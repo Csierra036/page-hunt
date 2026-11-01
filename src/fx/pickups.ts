@@ -1,4 +1,4 @@
-// Weapon crates dropped by ducks (Metal Slug style). They come down slowly on a
+// Weapon crates dropped by ducks. They come down slowly on a
 // parachute. A bullet cuts the parachute: the crate drops by gravity and the weapon
 // is collected when it hits the ground. A crate nobody shoots lands on its own,
 // blinks for a moment and disappears.
