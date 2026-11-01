@@ -4,7 +4,7 @@
 // key again inside the sweet spot is an "active reload": it finishes instantly and gives
 // bonus points; missing it jams the gun and the reload takes longer.
 //
-// Bonus weapons (Metal Slug style) drop from ducks: limited ammo, no reload, and they
+// Bonus weapons drop from ducks: limited ammo, no reload, and they
 // are thrown away when empty.
 
 export type WeaponId = 'shotgun' | 'hmg' | 'rocket' | 'sniper';

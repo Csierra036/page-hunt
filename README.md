@@ -41,7 +41,7 @@ El juego no finge que todas las webs funcionan igual: según lo que el navegador
 ### Patos, armas y combos
 
 - **La escopeta** es el arma base: 6 cartuchos y recarga con **R**. Si vuelves a pulsar cuando la barra está en la zona verde, haces una **recarga perfecta**; si fallas, el arma se encasquilla.
-- **Los patos** sueltan cajas en paracaídas con armas tipo Metal Slug: **ametralladora**, **lanzacohetes** y **francotirador**. Dispara al paracaídas y recoge la caja cuando toque el suelo.
+- **Armas extra**: al caer, algunos patos dejan una caja que baja flotando en paracaídas. Dentro puede haber una **ametralladora**, un **lanzacohetes** o un **francotirador**. Corta el paracaídas de un disparo y el arma es tuya en cuanto la caja llega al suelo.
 - **Los combos** multiplican los puntos (hasta ×8) mientras no falles. Hay patos dorados que valen más y patos bonus que traen una bandada extra.
 - Con el daño que haces se carga un ataque especial, **Doom**: cuando el medidor está lleno, pulsa **Q** y arrasa toda la pantalla.
 
@@ -134,7 +134,7 @@ npm run dev          # http://localhost:5173
 - **Estilo pixel art**: grietas, agujeros, anillos de impacto, polvo y patos están hechos de bloques. Los elementos dañados pierden trozos en escalera por los bordes y se rompen en bloques cuadrados que caen sin girar. En el modo DOM real, las caídas y sacudidas van a saltos (`steps()`).
 - **La mira es el arma**: no hay arma dibujada. Junto a la mira se ven los cartuchos que quedan, el arco de recarga con la zona verde de la recarga perfecta y una "R" parpadeante cuando el cargador está vacío. Al disparar, la mira salta por el retroceso. Con ratón no hay caja de munición abajo; en táctil sí, con botones.
 - **Escopeta (arma base)**: 6 cartuchos, 7 perdigones con dispersión y 1 de daño por perdigón. Es la única que se recarga.
-- **Armas bonus (estilo Metal Slug)**: los patos abatidos pueden soltar una caja con letra que baja en paracaídas: los dorados siempre, el pato bonus la mitad de las veces y los normales un 30 % (más durante un jefe). Si le disparas, el paracaídas se corta, la caja cae por gravedad y al tocar el suelo te da el arma. Si no le disparas, aterriza, parpadea y desaparece. Las armas bonus tienen balas limitadas, no se recargan y se desechan al vaciarse, y vuelves a la escopeta. Otra caja de la misma letra suma un cargador.
+- **Armas bonus**: los patos abatidos pueden soltar una caja con letra que baja en paracaídas: los dorados siempre, el pato bonus la mitad de las veces y los normales un 30 % (más durante un jefe). Si le disparas, el paracaídas se corta, la caja cae por gravedad y al tocar el suelo te da el arma. Si no le disparas, aterriza, parpadea y desaparece. Las armas bonus tienen balas limitadas, no se recargan y se desechan al vaciarse, y vuelves a la escopeta. Otra caja de la misma letra suma un cargador.
   - **H · Ametralladora**: 60 balas, automática (mantén el clic).
   - **R · Lanzacohetes**: 6 cohetes que explotan siempre donde impactan, sea un pato, el jefe, una caja o la página. La explosión alcanza a todos los patos del radio, al jefe y sus proyectiles, corta los paracaídas cercanos y daña la página.
   - **S · Francotirador**: 8 balas de 12 de daño, ideal contra imágenes grandes y jefes.
