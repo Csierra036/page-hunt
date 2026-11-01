@@ -4,6 +4,7 @@ import { POINTS, progress, Score } from './core/score';
 import { Weapon, type BonusId } from './core/weapon';
 import { Allies } from './fx/allies';
 import { Boss, BOSSES, bossForRound, MAX_ROUND, type BossHost } from './fx/bosses';
+import { DOOM_BOSS_FRACTION, DOOM_PAGE_POWER, DoomMeter, DoomSequence, doomRadius, vortexColor } from './fx/doom';
 import { Flock, type Duck } from './fx/ducks';
 import { Particles } from './fx/particles';
 import { Pickups, randomBonus, type Pickup } from './fx/pickups';
@@ -42,6 +43,9 @@ export class Game {
   private trigger = false;
   boss: Boss | null = null;
   bossesDefeated = 0;
+  /** The screen-wide "Doom" ultimate: charges from damage dealt, triggered with its own key. */
+  readonly doom = new DoomMeter();
+  readonly doomFx = new DoomSequence();
   hearts = MAX_HEARTS;
   ending: Ending | null = null;
   /** Seconds of invulnerability after losing a heart. */
@@ -116,6 +120,8 @@ export class Game {
     this.boss = null;
     this.bossesDefeated = 0;
     this.bossDoneRound = 0;
+    this.doom.reset();
+    this.doomFx.reset();
     this.hearts = MAX_HEARTS;
     this.ending = null;
     this.invuln = 0;
@@ -248,6 +254,9 @@ export class Game {
       this.pause();
     } else if (code === 'KeyM') {
       this.toggleMute();
+    } else if (code === 'KeyQ') {
+      e.preventDefault();
+      if (!e.repeat) this.useDoom();
     } else if (code === 'Space' || code === 'Enter') {
       e.preventDefault();
       if (!e.repeat) this.fire();
@@ -281,7 +290,7 @@ export class Game {
 
   fire() {
     const stage = this.stage;
-    if (!stage) return;
+    if (!stage || this.doomFx.active) return;
     const wpn = this.weapon;
     if (!wpn.fire(this.time * 1000)) {
       // Holding the trigger of an automatic weapon just waits for the next round.
@@ -371,12 +380,45 @@ export class Game {
     return this.stage!.blast(x, y, r, power);
   }
 
+  /** Triggers the Doom ultimate once the meter is full. The actual damage lands in `doomImpact`, once the reveal panel snaps shut. */
+  useDoom() {
+    if (this.doomFx.active || this.state !== 'playing' || !this.stage) return;
+    if (!this.doom.consume()) {
+      this.ui.toast('DOOM NO CARGADO', 700);
+      return;
+    }
+    this.trigger = false;
+    audio.doomCharge();
+    const ox = this.aim.inside ? this.aim.x : this.w / 2;
+    const oy = this.aim.inside ? this.aim.y : this.h / 2;
+    this.doomFx.start(() => this.doomImpact(ox, oy), ox, oy);
+  }
+
+  /** Screen-wide payoff: every duck dies, the page takes a huge hit, the boss loses a flat, non-lethal chunk. */
+  private doomImpact(ox: number, oy: number) {
+    if (!this.stage) return;
+    const r = doomRadius(this.w, this.h);
+    audio.doomBlast();
+    this.addShake(26);
+    this.particles.ring(ox, oy, Math.hypot(this.w, this.h) * 0.5, 'rgba(194,59,255,0.9)');
+    this.particles.ring(ox, oy, Math.hypot(this.w, this.h) * 0.3, 'rgba(255,72,40,0.9)');
+    for (const d of this.flock.alive) this.shootDuck(d);
+    for (const c of this.pickups.items) if (c.state === 'parachute') this.cutCrate(c);
+    if (this.boss) {
+      const b = this.boss.doomHit(this.boss.max * DOOM_BOSS_FRACTION);
+      if (b) this.bossHit(b, this.boss.x, this.boss.y);
+    }
+    this.award(this.stage.blast(ox, oy, r, DOOM_PAGE_POWER), ox, oy);
+  }
+
   // ---------- Bosses and hearts ----------
 
   private bossHit(b: NonNullable<ReturnType<Boss['shoot']>>, x: number, y: number) {
     if (b.what === 'boss') {
       audio.impact();
       const pts = this.score.add(b.damage * 20);
+      // Not while Doom itself is hitting the boss: it must not refund the meter it just spent.
+      if (!this.doomFx.active) this.doom.add(b.damage * 2);
       this.particles.popup(x, y - 20, `+${pts}`, '#ff9a5a', 11);
       this.particles.sparks(x, y, 5, '#ffcc33');
     } else if (b.what === 'projectile' && b.destroyed) {
@@ -497,7 +539,11 @@ export class Game {
 
   private award(res: HitResult, x: number, y: number) {
     let pts = 0;
-    if (res.damage > 0) pts += this.score.add(POINTS.damage * res.damage);
+    if (res.damage > 0) {
+      pts += this.score.add(POINTS.damage * res.damage);
+      // Not while Doom itself is landing: its own page blast must not refund its meter.
+      if (!this.doomFx.active) this.doom.add(res.damage * 0.8 + res.broke * 5);
+    }
     if (res.broke > 0) {
       pts += this.score.add(POINTS.breakBase * res.broke + res.breakPoints);
       this.score.broken += res.broke;
@@ -514,6 +560,8 @@ export class Game {
     audio.duckHit();
     const base = d.kind === 'golden' ? POINTS.goldenDuck : d.kind === 'bonus' ? POINTS.bonusDuck : POINTS.duck;
     const pts = this.score.add(base);
+    // Not while Doom itself is wiping the flock: it must not refund the meter it just spent.
+    if (!this.doomFx.active) this.doom.add(d.kind === 'normal' ? 3 : 6);
     this.particles.popup(d.x, d.y - d.r * 1.6, `+${pts}`, d.kind === 'normal' ? '#ffffff' : '#ffd84d', 16);
     this.particles.chips(d.x, d.y, d.palette.body, 10);
     this.particles.chips(d.x, d.y, '#ffffff', 6);
@@ -544,7 +592,7 @@ export class Game {
   // ---------- Reload ----------
 
   reload() {
-    if (!this.stage || (this.state !== 'playing' && this.state !== 'finale')) return;
+    if (!this.stage || this.doomFx.active || (this.state !== 'playing' && this.state !== 'finale')) return;
     audio.init();
     if (this.bonus) {
       this.ui.toast(`${this.bonus.def.name.toUpperCase()}: NO SE RECARGA`, 900);
@@ -600,18 +648,20 @@ export class Game {
         this.ui.toast('¡PATO ALIADO!', 1200);
       }
     }
+    this.doomFx.update(dt);
     this.allies.update(dt, this.boss, this.w, this.h);
     this.reticle.update(dt);
     this.invuln = Math.max(0, this.invuln - dt);
     this.hurtFlash = Math.max(0, this.hurtFlash - dt * 2.5);
-    if (this.state === 'playing') {
+    // The Doom cutscene freezes the fight: no new boss attacks or duck movement while it plays.
+    if (this.state === 'playing' && !this.doomFx.active) {
       if (!this.boss && bossForRound(this.flock.round) && this.bossDoneRound < this.flock.round) this.spawnBoss(this.flock.round);
       if (this.boss) {
         this.boss.update(dt);
         if (this.boss.dead) this.bossDefeated(this.boss);
       }
     }
-    this.flock.update(dt, this.w, this.h, this.state === 'playing');
+    this.flock.update(dt, this.w, this.h, this.state === 'playing' && !this.doomFx.active);
     stage.update(dt);
     this.particles.update(dt);
 
@@ -671,6 +721,32 @@ export class Game {
       if (this.aim.inside) {
         this.reticle.draw(ctx, Math.round(this.aim.x), Math.round(this.aim.y), this.spread, this.weapon, keyLabel(this.settings.reloadKey), performance.now() / 1000);
       }
+      this.drawDoomGauge(ctx);
     }
+    this.doomFx.draw(ctx, this.w, this.h);
+  }
+
+  /** Bottom-left meter for the Doom ultimate: fills with damage dealt, flashes white when ready. */
+  private drawDoomGauge(ctx: CanvasRenderingContext2D) {
+    const x = 16;
+    const w = 130;
+    const h = 16;
+    const y = this.h - h - 16;
+    const ready = this.doom.ready;
+    const flash = ready ? 0.7 + Math.sin(performance.now() / 160) * 0.3 : 1;
+    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+    ctx.fillRect(x - 4, y - 4, w + 8, h + 24);
+    ctx.font = '8px "Press Start 2P", ui-monospace, monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = ready ? `rgba(255,255,255,${flash.toFixed(3)})` : '#9a8fd6';
+    ctx.fillText(ready ? `DOOM · ${keyLabel('KeyQ')}` : 'DOOM', x, y - 2 - 10);
+    ctx.fillStyle = '#2a2240';
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = ready ? vortexColor(0.5) : '#7a4fd8';
+    ctx.fillRect(x, y, Math.round(w * this.doom.pct), h);
+    ctx.strokeStyle = ready ? `rgba(255,255,255,${flash.toFixed(3)})` : 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, w, h);
   }
 }

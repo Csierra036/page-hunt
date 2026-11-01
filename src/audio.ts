@@ -364,3 +364,19 @@ export function lose() {
 export function allyShot() {
   tone(1200, 0.05, 'square', 0.04, 0, 600);
 }
+
+/** Doom charging up: three detuned tones climbing together under a rising, filtered whoosh. */
+export function doomCharge() {
+  tone(110, 0.9, 'sawtooth', 0.09, 0, 660);
+  tone(165, 0.9, 'sawtooth', 0.07, 0.03, 990);
+  tone(220, 0.9, 'triangle', 0.05, 0.06, 1320);
+  noise(0.9, 0.5, 300, 0, 'bandpass', 4000);
+}
+
+/** The wormhole landing: deeper and odder than explosion() (a tritone wail under the boom). */
+export function doomBlast() {
+  tone(55, 1.1, 'sine', 0.7, 0, 18);
+  tone(55 * Math.pow(2, 6 / 12), 0.5, 'sawtooth', 0.12, 0, 40);
+  noise(1.1, 0.75, 2000, 0, 'lowpass', 40);
+  for (let i = 0; i < 6; i++) noise(0.18, 0.3, 7000, Math.random() * 0.5, 'highpass', 1500);
+}

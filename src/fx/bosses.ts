@@ -167,6 +167,22 @@ export class Boss {
     return this.hurt(power);
   }
 
+  /**
+   * The Doom ultimate: a flat, unconditional hit that ignores armour, dive multipliers and
+   * decoy phasing (it is a wormhole, not a bullet) but is capped so the boss always survives
+   * with at least 1 HP. Also wipes every projectile and decoy on screen, like `blast`.
+   */
+  doomHit(amount: number): ShotResult {
+    if (this.dying > 0 || this.phase === 'enter') return null;
+    for (const p of this.projectiles) this.popProjectile(p);
+    this.decoys = [];
+    const dmg = Math.min(this.hp - 1, amount);
+    if (dmg <= 0) return null;
+    this.hp -= dmg;
+    this.flash = 0.12;
+    return { what: 'boss', damage: dmg };
+  }
+
   private hurt(amount: number): ShotResult {
     if (this.kind === 'mecha' && !this.coreOpen) {
       this.host.particles.sparks(this.x, this.y, 4, '#dfe6ee');
@@ -348,6 +364,9 @@ export class Boss {
 
     // Projectiles.
     for (const p of this.projectiles) {
+      // Already popped (shot down, or wiped by a blast/Doom) this same frame: skip its
+      // ground/crosshair check so it cannot still cost a heart before the filter below drops it.
+      if (p.life <= 0) continue;
       p.t += dt;
       if (p.kind === 'egg') p.vy += 220 * dt;
       if (p.homing) {
