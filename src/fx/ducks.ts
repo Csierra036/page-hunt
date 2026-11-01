@@ -231,7 +231,13 @@ export class Flock {
       const hits = this.tally.filter((t) => t === 'hit').length;
       this.events.waveEnd(hits, this.tally.length);
       this.spawned = 0;
-      if (!this.holdRound) this.round++;
+      if (!this.holdRound) {
+        this.round++;
+        // Clears the just-finished tally right away: otherwise it stays fully resolved (100%)
+        // for a few frames under the new round number, so the progress bar spikes ahead to the
+        // next round's mark and then drops back once the new wave resets it — a visible "rewind".
+        this.tally = [];
+      }
       this.restT = 2;
     }
   }

@@ -12,7 +12,7 @@ const KEY = 'page-hunt:settings';
 export const DEFAULTS: Settings = { reloadKey: 'KeyR', muted: false, volume: 0.6, shake: true };
 
 /** Keys the game already uses; the reload key cannot be bound to them. */
-export const RESERVED_KEYS = ['KeyP', 'Escape', 'KeyM', 'Tab'];
+export const RESERVED_KEYS = ['KeyP', 'Escape', 'KeyM', 'KeyQ', 'Tab'];
 
 export function loadSettings(): Settings {
   try {
@@ -30,6 +30,29 @@ export function saveSettings(s: Settings) {
   } catch {
     // Ignore: settings just won't persist.
   }
+}
+
+// Last pages played (per browser), shown as shortcuts on the start screen.
+const RECENT_KEY = 'page-hunt:recent';
+const MAX_RECENT = 4;
+
+export function loadRecent(): string[] {
+  try {
+    const list = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]');
+    return Array.isArray(list) ? list.filter((u) => typeof u === 'string').slice(0, MAX_RECENT) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function addRecent(url: string) {
+  const list = [url, ...loadRecent().filter((u) => u !== url)].slice(0, MAX_RECENT);
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+  } catch {
+    // Ignore: no shortcuts next time.
+  }
+  return list;
 }
 
 /** "KeyR" -> "R", "Space" -> "Espacio". */

@@ -3,6 +3,8 @@
 // or if they fail. Synth adapted from hotshot-destroy/src/audio.ts.
 import reloadUrl from './assets/sfx/reload-shotgun.mp3?url';
 import shotUrl from './assets/sfx/shotgun.mp3?url';
+import menuMusicUrl from './assets/music/maintheme.mp4?url';
+import gameMusicUrl from './assets/music/soundtrack.mp4?url';
 
 interface Sample {
   buffer: AudioBuffer;
@@ -67,12 +69,98 @@ function play(sample: Sample, vol: number, rate = 1) {
 export function setMuted(m: boolean) {
   muted = m;
   if (master) master.gain.value = muted ? 0 : volume;
+  fadeMusic();
 }
 
 export function setVolume(v: number) {
   volume = Math.max(0, Math.min(1, v));
   if (master && !muted) master.gain.value = volume;
+  fadeMusic();
 }
+
+// ---------- Music ----------
+// Streamed <audio> loops (no need to decode minutes of audio up front), kept well under the SFX
+// so they don't tire the player. Their level follows the master volume and mute setting.
+
+export type Track = 'menu' | 'game';
+
+const TRACKS: Record<Track, { url: string; level: number; rate: number }> = {
+  // Start and end screens: quiet and a bit slower.
+  menu: { url: menuMusicUrl, level: 0.22, rate: 0.85 },
+  // During a match: moderate, normal speed.
+  game: { url: gameMusicUrl, level: 0.4, rate: 1 },
+};
+const FADE_PER_TICK = 0.03;
+
+const players: Partial<Record<Track, HTMLAudioElement>> = {};
+let wanted: Track | null = null;
+let fadeTimer = 0;
+let waitingGesture = false;
+
+function player(t: Track) {
+  let el = players[t];
+  if (!el) {
+    el = new Audio(TRACKS[t].url);
+    el.loop = true;
+    el.preload = 'auto';
+    el.volume = 0;
+    el.defaultPlaybackRate = el.playbackRate = TRACKS[t].rate;
+    players[t] = el;
+  }
+  return el;
+}
+
+/** Cross-fades to `track` (null: silence). Each track starts from the beginning when it comes back. */
+export function music(track: Track | null) {
+  wanted = track;
+  if (track && !document.hidden) {
+    const el = player(track);
+    if (el.paused) el.play().catch(retryOnGesture);
+  }
+  fadeMusic();
+}
+
+// Browsers block audio until the user interacts with the page: try again on the first gesture.
+function retryOnGesture() {
+  if (waitingGesture) return;
+  waitingGesture = true;
+  const retry = () => {
+    waitingGesture = false;
+    window.removeEventListener('pointerdown', retry, true);
+    window.removeEventListener('keydown', retry, true);
+    music(wanted);
+  };
+  window.addEventListener('pointerdown', retry, true);
+  window.addEventListener('keydown', retry, true);
+}
+
+function fadeMusic() {
+  if (fadeTimer) return;
+  fadeTimer = window.setInterval(() => {
+    let moving = false;
+    for (const t of Object.keys(players) as Track[]) {
+      const el = players[t]!;
+      const target = t === wanted && !muted ? TRACKS[t].level * volume : 0;
+      const v = el.volume + Math.max(-FADE_PER_TICK, Math.min(FADE_PER_TICK, target - el.volume));
+      el.volume = Math.max(0, Math.min(1, v));
+      if (el.volume !== target) moving = true;
+      else if (target === 0 && t !== wanted && !el.paused) {
+        el.pause();
+        el.currentTime = 0;
+      }
+    }
+    if (!moving) {
+      clearInterval(fadeTimer);
+      fadeTimer = 0;
+    }
+  }, 50);
+}
+
+// No music while the tab is in the background.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) Object.values(players).forEach((el) => el.pause());
+  else music(wanted);
+});
 
 function tone(freq: number, dur: number, type: OscillatorType, vol: number, delay = 0, slideTo?: number) {
   if (!ac || !master) return;
@@ -275,4 +363,20 @@ export function lose() {
 /** An ally duck fires. */
 export function allyShot() {
   tone(1200, 0.05, 'square', 0.04, 0, 600);
+}
+
+/** Doom charging up: three detuned tones climbing together under a rising, filtered whoosh. */
+export function doomCharge() {
+  tone(110, 0.9, 'sawtooth', 0.09, 0, 660);
+  tone(165, 0.9, 'sawtooth', 0.07, 0.03, 990);
+  tone(220, 0.9, 'triangle', 0.05, 0.06, 1320);
+  noise(0.9, 0.5, 300, 0, 'bandpass', 4000);
+}
+
+/** The wormhole landing: deeper and odder than explosion() (a tritone wail under the boom). */
+export function doomBlast() {
+  tone(55, 1.1, 'sine', 0.7, 0, 18);
+  tone(55 * Math.pow(2, 6 / 12), 0.5, 'sawtooth', 0.12, 0, 40);
+  noise(1.1, 0.75, 2000, 0, 'lowpass', 40);
+  for (let i = 0; i < 6; i++) noise(0.18, 0.3, 7000, Math.random() * 0.5, 'highpass', 1500);
 }

@@ -1,8 +1,101 @@
 # Page Hunt
 
-Videojuego de navegador: escribes una URL, esa página se convierte en el escenario y la destruyes a tiros, al estilo de Duck Hunt mezclado con [destroy.spritefusion.com](https://destroy.spritefusion.com/). Disparas con el ratón, recargas y cazas patos que, al caer, se estrellan contra la página.
+**Convierte cualquier página web en tu campo de tiro.** Escribes una dirección, la página aparece en pantalla y empiezas a destrozarla a escopetazos mientras cazas patos, como en Duck Hunt, pero dentro de una web de verdad.
 
-El juego **no finge una compatibilidad universal**. Según lo que el navegador permite de verdad con cada URL, usa uno de tres modos y siempre muestra cuál es en el HUD.
+![Partida sobre la página de Duck Hunt en Wikipedia, con grietas, agujeros y patos en vuelo](docs/img/03-simulacion-wikipedia.jpg)
+
+## Reseña: ¿de qué trata?
+
+Page Hunt mezcla dos ideas: el clásico **Duck Hunt** de NES y el placer de **romper una página web** pieza a pieza. La mira es tu arma, cada clic es un disparo y todo lo que hay en pantalla (titulares, botones, imágenes, menús) recibe daño: primero se araña, luego se agrieta, se deforma y al final se rompe en bloques pixelados que caen. Mientras tanto, cruzan patos por el cielo y, cuando los derribas, se estrellan contra la página.
+
+No es solo un juguete para romper cosas: es un juego con rondas, jefes, armas y dos finales posibles.
+
+### Empezar es cuestión de un clic
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/img/01-menu.jpg" alt="Menú principal con el botón JUGAR AHORA" /></td>
+    <td width="50%"><img src="docs/img/02-compatibilidad.jpg" alt="Comprobación de compatibilidad de Wikipedia con el modo recomendado" /></td>
+  </tr>
+  <tr>
+    <td>El menú tiene un botón grande, <b>JUGAR AHORA</b>, que arranca con la página de prueba. Debajo puedes escribir la página que quieras, elegir una idea o volver a una página reciente. Los controles están a la vista.</td>
+    <td>Antes de jugar, el juego comprueba qué permite cada web y recomienda un modo. Si una página no se puede usar, explica por qué y ofrece una alternativa en lugar de quedarse en blanco.</td>
+  </tr>
+</table>
+
+### La página es el escenario
+
+El juego no finge que todas las webs funcionan igual: según lo que el navegador permite de verdad, usa uno de tres modos y siempre indica cuál en la esquina superior izquierda.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/img/04-dom-real.jpg" alt="Página de prueba con elementos reales agrietados" /></td>
+    <td width="50%"><img src="docs/img/03-simulacion-wikipedia.jpg" alt="Wikipedia en modo simulación visual" /></td>
+  </tr>
+  <tr>
+    <td><b>DOM real</b>: en páginas del propio juego, como la página de prueba, se dañan los elementos de verdad.</td>
+    <td><b>Simulación visual</b>: en webs externas se destruye una captura de la página, pieza a pieza. La web real nunca se toca. También existe el modo <b>Iframe en vivo</b> para las webs que se dejan mostrar dentro de otra.</td>
+  </tr>
+</table>
+
+### Patos, armas y combos
+
+- **La escopeta** es el arma base: 6 cartuchos y recarga con **R**. Si vuelves a pulsar cuando la barra está en la zona verde, haces una **recarga perfecta**; si fallas, el arma se encasquilla.
+- **Los patos** sueltan cajas en paracaídas con armas tipo Metal Slug: **ametralladora**, **lanzacohetes** y **francotirador**. Dispara al paracaídas y recoge la caja cuando toque el suelo.
+- **Los combos** multiplican los puntos (hasta ×8) mientras no falles. Hay patos dorados que valen más y patos bonus que traen una bandada extra.
+- Con el daño que haces se carga un ataque especial, **Doom**: cuando el medidor está lleno, pulsa **Q** y arrasa toda la pantalla.
+
+### Cuatro jefes
+
+Cada 5 rondas aparece un jefe. Sus ataques se pueden derribar a tiros; si te alcanzan, pierdes uno de tus 3 corazones. Durante el combate pueden caer cajas **A** con patos aliados que disparan a tu lado.
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/img/05-jefe-mama-pato.jpg" alt="Mamá Pato" /><br /><b>Ronda 5 · Mamá Pato</b>: suelta huevos que tienes que derribar antes de que lleguen al suelo.</td>
+    <td width="50%"><img src="docs/img/06-jefe-halcon-ninja.jpg" alt="Halcón Ninja" /><br /><b>Ronda 10 · Halcón Ninja</b>: lanza plumas teledirigidas y se lanza en picado contra tu mira.</td>
+  </tr>
+  <tr>
+    <td><img src="docs/img/07-jefe-mecha-pato.jpg" alt="Mecha-Pato" /><br /><b>Ronda 15 · Mecha-Pato</b>: blindado, con cohetes y un láser que barre la fila de tu mira (la franja roja avisa).</td>
+    <td><img src="docs/img/08-jefe-rey-fantasma.jpg" alt="Rey Fantasma" /><br /><b>Ronda 20 · Rey Fantasma</b>: se teletransporta y deja señuelos que también disparan. Solo el auténtico recibe daño.</td>
+  </tr>
+</table>
+
+### Dos finales
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/img/10-victoria.jpg" alt="Pantalla de victoria" /></td>
+    <td width="50%"><img src="docs/img/11-derrota.jpg" alt="Pantalla de derrota" /></td>
+  </tr>
+  <tr>
+    <td>Si vences al jefe de la ronda 20, la página entera se derrumba y eres <b>¡CAMPEÓN!</b></td>
+    <td>Si pierdes los 3 corazones, <b>¡TE DERROTARON!</b> En ambos casos ves tus estadísticas y puedes jugar otra vez o cambiar de página.</td>
+  </tr>
+</table>
+
+### También en el móvil
+
+<img src="docs/img/12-menu-movil.jpg" alt="Menú en un teléfono" width="260" align="right" />
+
+En pantallas táctiles se dispara tocando, hay un botón **RECARGAR** y el menú muestra los controles táctiles en vez de las teclas. La música cambia entre el menú y la partida, y el volumen se ajusta desde el propio menú.
+
+### Veredicto
+
+**Lo mejor**
+- La idea es original e inmediata: cualquier web que visitas a diario se convierte en un nivel.
+- El daño progresivo y el estilo pixel art hacen que cada disparo se sienta.
+- Los jefes cambian el ritmo y obligan a jugar distinto en cada uno.
+- Es honesto con sus límites: explica qué se puede hacer con cada página y nunca toca la web real.
+
+**Lo mejorable**
+- La primera captura de una web externa tarda entre 5 y 20 segundos.
+- Algunas webs bloquean al juego (inicio de sesión, CAPTCHA, protección antibots como Cloudflare).
+- En el modo iframe no se puede desplazar la página.
+- La simulación visual necesita Chromium en el servidor y bastante memoria.
+
+<br clear="right" />
+
+---
 
 ## Ejecución local
 
@@ -32,6 +125,7 @@ npm run dev          # http://localhost:5173
 | Recargar | **R** (configurable en Ajustes). En táctil, botón RECARGAR |
 | Recarga perfecta | Pulsar otra vez la tecla de recarga cuando la barra está en la zona verde |
 | Coger un arma bonus | Disparar a la caja (o a su paracaídas) mientras baja: cae y te da el arma al tocar el suelo |
+| Usar Doom | **Q**, solo con el medidor lleno |
 | Desplazar la página | Rueda, **clic derecho (o central) + arrastrar**, flechas, Re Pág / Av Pág. Táctil: arrastrar el dedo (tocar sin arrastrar dispara) |
 | Pausa / sonido | P o Esc / M |
 
@@ -44,7 +138,8 @@ npm run dev          # http://localhost:5173
   - **H · Ametralladora**: 60 balas, automática (mantén el clic).
   - **R · Lanzacohetes**: 6 cohetes que explotan siempre donde impactan, sea un pato, el jefe, una caja o la página. La explosión alcanza a todos los patos del radio, al jefe y sus proyectiles, corta los paracaídas cercanos y daña la página.
   - **S · Francotirador**: 8 balas de 12 de daño, ideal contra imágenes grandes y jefes.
-- **Sonido**: el disparo y la recarga de la escopeta usan las grabaciones de `src/assets/sfx/`. El francotirador y la ametralladora usan la misma grabación, acelerada. El resto (patos, impactos, roturas, fanfarria) es sintetizado con WebAudio, que también sirve de respaldo si las grabaciones no cargan.
+- **Doom (especial)**: un medidor propio (abajo a la izquierda) se llena con el daño que haces a la página, los patos y el jefe; no se consigue en una caja. Al llenarse, **Q** lo activa: la acción se congela, aparece un panel estilo cómic (Alan Becker / Skullgirls) con el personaje invocando el vórtice, y al cerrarse el panel se desata un agujero de gusano rojo-púrpura que arrasa toda la pantalla: mata a todos los patos visibles, corta cualquier paracaídas en el aire, hace un daño de área enorme a la página y resta al jefe un tramo fijo de su vida máxima (`src/fx/doom.ts`) — nunca lo mata, ignora su blindaje o fase y siempre lo golpea. El daño que hace el propio Doom no recarga su medidor.
+- **Sonido**: el disparo y la recarga de la escopeta usan las grabaciones de `src/assets/sfx/`. El francotirador y la ametralladora usan la misma grabación, acelerada. El resto (patos, impactos, roturas, fanfarria, Doom) es sintetizado con WebAudio, que también sirve de respaldo si las grabaciones no cargan.
 - **Recarga**: solo recarga, no daña la página. No se permite con el cargador lleno, y mientras dura no se puede disparar. La excepción es la **recarga activa**: si se pulsa de nuevo en la zona verde, termina al instante y da puntos extra; si se pulsa fuera, el arma se encasquilla y la recarga dura un 60 % más.
 - **Daño progresivo**: cada elemento tiene puntos de vida según su tamaño. Pasa por arañado → agrietado y descolorido → deformado → roto (cae y se fragmenta). Los impactos y las grietas son acumulativos.
 - **Imágenes resistentes**: las imágenes y los fondos pintados grandes ganan vida con su tamaño, hasta 120 puntos (`hpForImage` en `src/core/damage.ts`). Un texto normal tiene entre 2 y 24. Por ejemplo, la imagen del hero de eddyverso.com (1280×800) aguanta 34 disparos de escopeta. El choque de un pato solo remata elementos agrietados con poca vida, nunca una imagen grande.
@@ -91,6 +186,7 @@ game.ts (bucle) ── core/weapon (munición/recarga) ── core/score (puntos
 | Visualización del escenario | `src/stage/{dom,iframe,capture}.ts` con una interfaz común en `src/stage/types.ts` |
 | Apuntado y disparo | `src/game.ts` (`fire`), `src/fx/gun.ts` |
 | Munición y recarga | `src/core/weapon.ts` (máquina de estados pura) y `src/game.ts` (`reload`, `shockwave`) |
+| Especial Doom | `src/fx/doom.ts` (medidor y cinemática), `Boss.doomHit` en `src/fx/bosses.ts`, `Game.useDoom`/`doomImpact` en `src/game.ts` |
 | Sistema de daño | `src/core/damage.ts` y cada stage |
 | Física y partículas | `src/fx/particles.ts` |
 | Puntuación y progresión | `src/core/score.ts`, `src/fx/ducks.ts` |
